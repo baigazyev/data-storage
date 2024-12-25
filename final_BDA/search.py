@@ -26,13 +26,35 @@ def process_apt_data(request):
         query_apt_data = pull_apt_from_gbp(distance, budget, roomType)
     return query_apt_data
 
+# def process_user_data(request):
+#     if request.POST['Roommate'] == 'No':
+#         return []
+
+#     school = request.POST['School']
+#     gender = request.POST['Gender']
+#     number = str(request.POST.getlist('Number')).replace("[", "").replace("]", "").replace("'", "")
+
+#     if request.POST['Same School'] == 'Yes' and request.POST['Same Gender'] == 'Yes':
+#         query_user_data = roommate_sameSchool_sameGender(school, gender, number)
+
+#     elif request.POST['Same School'] == 'No' and request.POST['Same Gender'] == 'Yes':
+#         query_user_data = roommate_sameGender(gender, number)
+
+#     elif request.POST['Same School'] == 'Yes' and request.POST['Same Gender'] == 'No':
+#         query_user_data = roommate_sameSchool(school, number)
+#     else:
+#         query_user_data = roommate_flexible(number)
+
+#     res = find_your_roommate(request, query_user_data)
+#     return res
+
 def process_user_data(request):
     if request.POST['Roommate'] == 'No':
         return []
 
     school = request.POST['School']
     gender = request.POST['Gender']
-    number = str(request.POST.getlist('Number')).replace("[", "").replace("]", "").replace("'", "")
+    number = int(request.POST['Number'])  # Преобразование в int
 
     if request.POST['Same School'] == 'Yes' and request.POST['Same Gender'] == 'Yes':
         query_user_data = roommate_sameSchool_sameGender(school, gender, number)
@@ -48,45 +70,108 @@ def process_user_data(request):
     res = find_your_roommate(request, query_user_data)
     return res
 
+
+# def show_results(request):
+#     '''
+#     TODO: Make sure how to calculate this ratio
+#     <QueryDict: {'csrfmiddlewaretoken': ['EmwCZrYwE79kaghvqgUA39De26046g8SjyPwwWktTTPDz974gEjX5mVfOBdAX76H'],
+#     'First Name': ['Jiaxiang'],
+#     'Last Name': ['Zhang'],
+#     'Uni': ['jz3275'],
+#     'Age': ['22'],
+#     'Gender': ['1'],
+#     'Nationality': ['China'],
+#     'Email': ['jz3275@columbia.edu'],
+#     'School': ['SEAS'],
+#      'Major': ['Electrical Engineering'],
+#      'Smoking': ['No'],
+#      'Alcohol': ['No'],
+#      'Habit': ['Early Bird'],
+#      'Pets': ['0'],
+#      'Certain Apartment': ['No'],
+#      'Apartment': ['ART LOFT/HOME:  DINNERS, GATHERINGS, PHOTO'],
+#      'numDistance': ['3'],
+#      'Room Type': ['Private room', 'Entire home/apt'],
+#      'numBudget': ['1600'],
+#      'Roommate': ['Yes'],
+#      'Number': ['1', '2'],
+#      'Same School': ['No'],
+#      'Same Gender': ['Yes']}>
+#     '''
+# #     print(f'request: {request.POST}')
+# #     push_to_gbq(request)
+#     results_data= {}
+#     if request.POST:
+#         query_user_data = process_user_data(request)
+#         length_user = len(query_user_data)
+#         number = str(request.POST.getlist('Number')).replace("[", "").replace("]", "").replace("'", "")
+#         max = int(number[len(number) - 1]) * 2
+
+#         query_apt_data = process_apt_data(request)
+#         length_apt = len(query_apt_data)
+
+
+#         for i in range(length_apt):
+#             apartment_Position = "apartment" + str(i)
+#             roomType_Position = "roomType" + str(i)
+#             capacity_Position = "capacity" + str(i)
+#             location_Position = "location" + str(i)
+#             distance_Position = "distance" + str(i)
+#             price_Position = "price" + str(i)
+#             reviewsPerMonth_Position = "reviewsPerMonth" + str(i)
+#             results_data[apartment_Position] = query_apt_data[i]["name"]
+#             results_data[roomType_Position] = query_apt_data[i]["room_type"]
+#             results_data[capacity_Position] = query_apt_data[i]["Capacity"]
+#             results_data[location_Position] = query_apt_data[i]["neighbourhood"]
+#             results_data[distance_Position] = round(query_apt_data[i]["distance_line"],2)
+#             results_data[price_Position] = query_apt_data[i]["price_raw"] * 30 / query_apt_data[i]["Capacity"]
+#             results_data[reviewsPerMonth_Position] = query_apt_data[i]["reviews_per_month"]
+
+#         if length_user != 0:
+#             for i in range(max):
+#                 fullName_Position = "fullName" + str(i)
+#                 email_Position = "email" + str(i)
+#                 gender_Position = "gender" + str(i)
+#                 nationality_Position = "nationality" + str(i)
+# #                 roommateRatio_Position = "roommateRatio" + str(i)
+#                 age_Position = "age" + str(i)
+#                 budget_Position = "budge" + str(i)
+#                 preferredDistance_Position = "preferredDistance" + str(i)
+#                 results_data[fullName_Position] = query_user_data[i]["Full_Name"]
+#                 results_data[email_Position] = query_user_data[i]["Email_address"]
+#                 if query_user_data[i]["Gender"] == 1:
+#                     results_data[gender_Position] = "Male"
+#                 else:
+#                     results_data[gender_Position] = "Female"
+#                 results_data[nationality_Position] = query_user_data[i]["Nationality"]
+#                 results_data[age_Position] = query_user_data[i]["Age"]
+#                 results_data[budget_Position] = query_user_data[i]["Preferred_Budgets"]
+#                 results_data[preferredDistance_Position] = query_user_data[i]["Preferred_Distance"]
+# #                 results_data[roommateRatio_Position] = query_user_data[i]["Full_Name"]
+
+
+#         results_data['roommatesRecommendation'] = "Roommates Recommendation"
+#         results_data['apartmentRecommendation'] = "Apartment Recommendation"
+
+
+
+#     return render(request, 'results.html', results_data)
+
+
 def show_results(request):
-    '''
-    TODO: Make sure how to calculate this ratio
-    <QueryDict: {'csrfmiddlewaretoken': ['EmwCZrYwE79kaghvqgUA39De26046g8SjyPwwWktTTPDz974gEjX5mVfOBdAX76H'],
-    'First Name': ['Jiaxiang'],
-    'Last Name': ['Zhang'],
-    'Uni': ['jz3275'],
-    'Age': ['22'],
-    'Gender': ['1'],
-    'Nationality': ['China'],
-    'Email': ['jz3275@columbia.edu'],
-    'School': ['SEAS'],
-     'Major': ['Electrical Engineering'],
-     'Smoking': ['No'],
-     'Alcohol': ['No'],
-     'Habit': ['Early Bird'],
-     'Pets': ['0'],
-     'Certain Apartment': ['No'],
-     'Apartment': ['ART LOFT/HOME:  DINNERS, GATHERINGS, PHOTO'],
-     'numDistance': ['3'],
-     'Room Type': ['Private room', 'Entire home/apt'],
-     'numBudget': ['1600'],
-     'Roommate': ['Yes'],
-     'Number': ['1', '2'],
-     'Same School': ['No'],
-     'Same Gender': ['Yes']}>
-    '''
-#     print(f'request: {request.POST}')
-#     push_to_gbq(request)
-    results_data= {}
+    results_data = {}
     if request.POST:
         query_user_data = process_user_data(request)
         length_user = len(query_user_data)
+
         number = str(request.POST.getlist('Number')).replace("[", "").replace("]", "").replace("'", "")
-        max = int(number[len(number) - 1]) * 2
+        if not number:  # Проверка, если number пустой
+            max = 0
+        else:
+            max = int(number[len(number) - 1]) * 2
 
         query_apt_data = process_apt_data(request)
         length_apt = len(query_apt_data)
-
 
         for i in range(length_apt):
             apartment_Position = "apartment" + str(i)
@@ -100,17 +185,16 @@ def show_results(request):
             results_data[roomType_Position] = query_apt_data[i]["room_type"]
             results_data[capacity_Position] = query_apt_data[i]["Capacity"]
             results_data[location_Position] = query_apt_data[i]["neighbourhood"]
-            results_data[distance_Position] = round(query_apt_data[i]["distance_line"],2)
+            results_data[distance_Position] = round(query_apt_data[i]["distance_line"], 2)
             results_data[price_Position] = query_apt_data[i]["price_raw"] * 30 / query_apt_data[i]["Capacity"]
             results_data[reviewsPerMonth_Position] = query_apt_data[i]["reviews_per_month"]
 
-        if length_user != 0:
+        if length_user != 0 and max > 0:
             for i in range(max):
                 fullName_Position = "fullName" + str(i)
                 email_Position = "email" + str(i)
                 gender_Position = "gender" + str(i)
                 nationality_Position = "nationality" + str(i)
-#                 roommateRatio_Position = "roommateRatio" + str(i)
                 age_Position = "age" + str(i)
                 budget_Position = "budge" + str(i)
                 preferredDistance_Position = "preferredDistance" + str(i)
@@ -124,13 +208,9 @@ def show_results(request):
                 results_data[age_Position] = query_user_data[i]["Age"]
                 results_data[budget_Position] = query_user_data[i]["Preferred_Budgets"]
                 results_data[preferredDistance_Position] = query_user_data[i]["Preferred_Distance"]
-#                 results_data[roommateRatio_Position] = query_user_data[i]["Full_Name"]
-
 
         results_data['roommatesRecommendation'] = "Roommates Recommendation"
         results_data['apartmentRecommendation'] = "Apartment Recommendation"
-
-
 
     return render(request, 'results.html', results_data)
 
@@ -180,12 +260,12 @@ def pull_from_gbp(option):
     if option == 'apartment':
         query = """
             SELECT *
-            FROM `big-data-6893-326823.roommate.apartment`
+            FROM `roommate-project-445720.roommate.apartment`
         """
     elif option == 'user':
         query = """
             SELECT *
-            FROM `big-data-6893-326823.roommate.roommates`
+            FROM `roommate-project-445720.roommate.roommates`
         """
 
     query_job = client.query(query)
@@ -195,7 +275,7 @@ def pull_from_gbp(option):
 def pull_apt_from_gbp_by_certain(apartment):
     os.environ["GOOGLE_APPLICATION_CREDENTIALS"]="./credentials/big-data-6893-326823-15d1e60fd014.json"
     client = bigquery.Client()
-    string1 = "SELECT * FROM `big-data-6893-326823.roommate.apartment` where name = '"+ apartment  +"'"
+    string1 = "SELECT * FROM `roommate-project-445720.roommate.apartment` where name = '"+ apartment  +"'"
     query = string1
     query_job = client.query(query)
     query_data = [dict(row.items()) for row in query_job]
@@ -206,51 +286,93 @@ def pull_apt_from_gbp(distance, budget, roomType):
     client = bigquery.Client()
     length = len(roomType)
     if length == 3:
-        string1 = "SELECT * FROM `big-data-6893-326823.roommate.apartment` order by (-reviews_per_month *0.2 + abs(price_raw * 30 / Capacity - " + budget + ") * 0.4 + abs(distance_line - " + distance +") * 0.4) limit 3"
+        string1 = "SELECT * FROM `roommate-project-445720.roommate.apartment` order by (-reviews_per_month *0.2 + abs(price_raw * 30 / Capacity - " + budget + ") * 0.4 + abs(distance_line - " + distance +") * 0.4) limit 3"
     elif length == 2:
-        string1 = "SELECT * FROM `big-data-6893-326823.roommate.apartment` where room_type = '" + roomType[0] +"' or room_type = '" + roomType[1] +"' order by (-reviews_per_month *0.2 + abs(price_raw * 30 / Capacity - " + budget + ") * 0.4 + abs(distance_line - " + distance +") * 0.4) limit 3"
+        string1 = "SELECT * FROM `roommate-project-445720.roommate.apartment` where room_type = '" + roomType[0] +"' or room_type = '" + roomType[1] +"' order by (-reviews_per_month *0.2 + abs(price_raw * 30 / Capacity - " + budget + ") * 0.4 + abs(distance_line - " + distance +") * 0.4) limit 3"
     else:
-        string1 = "SELECT * FROM `big-data-6893-326823.roommate.apartment` where room_type = '" + roomType[0] +"' order by (-reviews_per_month *0.2 + abs(price_raw * 30 / Capacity - " + budget + ") * 0.4 + abs(distance_line - " + distance +") * 0.4) limit 3"
+        string1 = "SELECT * FROM `roommate-project-445720.roommate.apartment` where room_type = '" + roomType[0] +"' order by (-reviews_per_month *0.2 + abs(price_raw * 30 / Capacity - " + budget + ") * 0.4 + abs(distance_line - " + distance +") * 0.4) limit 3"
     query = string1
     query_job = client.query(query)
     query_data = [dict(row.items()) for row in query_job]
     return query_data
+
+# def roommate_sameSchool_sameGender(school, gender, number):
+#     os.environ["GOOGLE_APPLICATION_CREDENTIALS"]="./credentials/big-data-6893-326823-15d1e60fd014.json"
+#     client = bigquery.Client()
+# #     max = int(number[len(number) - 1]) * 2
+# #     string1 = "SELECT * FROM `big-data-6893-326823.roommate.roommates` where School = '" + school + "' and Gender = " + gender + " and Number_of_Roommates = '" + number + "' limit " + str(max)
+#     string1 = "SELECT * FROM `roommate-project-445720.roommate.roommates` where School = '" + school + "' and Gender = " + gender + " and Number_of_Roommates = '" + number + "'"
+#     query = string1
+#     print(query)
+#     query_job = client.query(query)
+#     query_data = [dict(row.items()) for row in query_job]
+# #     print(query_data)
+#     return query_data
 
 def roommate_sameSchool_sameGender(school, gender, number):
-    os.environ["GOOGLE_APPLICATION_CREDENTIALS"]="./credentials/big-data-6893-326823-15d1e60fd014.json"
+    os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "./credentials/big-data-6893-326823-15d1e60fd014.json"
     client = bigquery.Client()
-#     max = int(number[len(number) - 1]) * 2
-#     string1 = "SELECT * FROM `big-data-6893-326823.roommate.roommates` where School = '" + school + "' and Gender = " + gender + " and Number_of_Roommates = '" + number + "' limit " + str(max)
-    string1 = "SELECT * FROM `big-data-6893-326823.roommate.roommates` where School = '" + school + "' and Gender = " + gender + " and Number_of_Roommates = '" + number + "'"
-    query = string1
-    print(query)
+
+    query = f"""
+        SELECT * 
+        FROM `roommate-project-445720.roommate.roommates`
+        WHERE School = '{school}' AND Gender = '{gender}' AND Number_of_Roommates = {number}
+    """
     query_job = client.query(query)
     query_data = [dict(row.items()) for row in query_job]
-#     print(query_data)
     return query_data
+
+
+# def roommate_sameSchool(school, number):
+#     os.environ["GOOGLE_APPLICATION_CREDENTIALS"]="./credentials/big-data-6893-326823-15d1e60fd014.json"
+#     client = bigquery.Client()
+#     string1 = "SELECT * FROM `roommate-project-445720.roommate.roommates` where School = '" + school + "' and Number_of_Roommates = '" + number + "'"
+#     query = string1
+#     query_job = client.query(query)
+#     query_data = [dict(row.items()) for row in query_job]
+#     return query_data
 
 def roommate_sameSchool(school, number):
-    os.environ["GOOGLE_APPLICATION_CREDENTIALS"]="./credentials/big-data-6893-326823-15d1e60fd014.json"
+    os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "./credentials/big-data-6893-326823-15d1e60fd014.json"
     client = bigquery.Client()
-    string1 = "SELECT * FROM `big-data-6893-326823.roommate.roommates` where School = '" + school + "' and Number_of_Roommates = '" + number + "'"
-    query = string1
+
+    query = f"""
+        SELECT * 
+        FROM `roommate-project-445720.roommate.roommates`
+        WHERE School = '{school}' AND Number_of_Roommates = {number}
+    """
     query_job = client.query(query)
     query_data = [dict(row.items()) for row in query_job]
     return query_data
 
+
+# def roommate_sameGender(gender, number):
+#     os.environ["GOOGLE_APPLICATION_CREDENTIALS"]="./credentials/big-data-6893-326823-15d1e60fd014.json"
+#     client = bigquery.Client()
+#     string1 = "SELECT * FROM `roommate-project-445720.roommate.roommates` where Gender = " + gender + " and Number_of_Roommates = '" + number + "'"
+#     query = string1
+#     query_job = client.query(query)
+#     query_data = [dict(row.items()) for row in query_job]
+#     return query_data
+
 def roommate_sameGender(gender, number):
-    os.environ["GOOGLE_APPLICATION_CREDENTIALS"]="./credentials/big-data-6893-326823-15d1e60fd014.json"
+    os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "./credentials/big-data-6893-326823-15d1e60fd014.json"
     client = bigquery.Client()
-    string1 = "SELECT * FROM `big-data-6893-326823.roommate.roommates` where Gender = " + gender + " and Number_of_Roommates = '" + number + "'"
-    query = string1
+
+    query = f"""
+        SELECT * 
+        FROM `roommate-project-445720.roommate.roommates`
+        WHERE Gender = '{gender}' AND Number_of_Roommates = {number}
+    """
     query_job = client.query(query)
     query_data = [dict(row.items()) for row in query_job]
     return query_data
+
 
 def roommate_flexible(number):
     os.environ["GOOGLE_APPLICATION_CREDENTIALS"]="./credentials/big-data-6893-326823-15d1e60fd014.json"
     client = bigquery.Client()
-    string1 = "SELECT * FROM `big-data-6893-326823.roommate.roommates` where Number_of_Roommates = '" + number + "'"
+    string1 = "SELECT * FROM `roommate-project-445720.roommate.roommates` where Number_of_Roommates = '" + number + "'"
     query = string1
     query_job = client.query(query)
     query_data = [dict(row.items()) for row in query_job]
@@ -274,19 +396,32 @@ def normalize_target(target, df, features):
         target[feature_name] = ((target[feature_name] - min_value) / (max_value - min_value))*2-1
     return target
 
+# def find_your_roommate(request, query_user_data, algo='euclidean'):
+#     # print(f'find_your_roommate query_user_data: {query_user_data}')
+#     # print(f'type query_user_data: {type(query_user_data)}')
+#     df = pd.DataFrame(query_user_data)
+#     meta_data = df.drop(
+#         labels=['int64_field_0', 'Full_Name', 'Email_address', 'Last_Name', 'First_Name', 'Uni', 'Nationality',
+#                 'School', 'Major', 'Roommate', 'Number_of_Roommates'], axis=1)
+#     # print(meta_data.columns)
+#     # Index(['Gender', 'Smoking', 'Alchohol', 'Habit', 'Roommate', 'Age',
+#     #        'Accept_Animals', 'Preferred_Budgets', 'Preferred_Distance'],
+#     #       dtype='object')
+#     features = ['Preferred_Budgets', 'Preferred_Distance', 'Age']
+#     normalized_data = normalize(meta_data, features)
 def find_your_roommate(request, query_user_data, algo='euclidean'):
-    # print(f'find_your_roommate query_user_data: {query_user_data}')
-    # print(f'type query_user_data: {type(query_user_data)}')
+    if not query_user_data:  # Если данных нет, возвращаем пустой список
+        return []
+
     df = pd.DataFrame(query_user_data)
     meta_data = df.drop(
-        labels=['int64_field_0', 'Full_Name', 'Email_address', 'Last_Name', 'First_Name', 'Uni', 'Nationality',
-                'School', 'Major', 'Roommate', 'Number_of_Roommates'], axis=1)
-    # print(meta_data.columns)
-    # Index(['Gender', 'Smoking', 'Alchohol', 'Habit', 'Roommate', 'Age',
-    #        'Accept_Animals', 'Preferred_Budgets', 'Preferred_Distance'],
-    #       dtype='object')
+        labels=['Full_Name', 'Email_address', 'Last_Name', 'First_Name', 'Uni', 'Nationality',
+                'School', 'Major', 'Roommate', 'Number_of_Roommates'], axis=1, errors='ignore'
+    )
     features = ['Preferred_Budgets', 'Preferred_Distance', 'Age']
     normalized_data = normalize(meta_data, features)
+
+
     test_person = normalized_data.iloc[0]
     print(f'test_person:\n{test_person}')
 
